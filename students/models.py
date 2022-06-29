@@ -15,7 +15,6 @@ class Course(models.Model):
     def __str__(self):
         return self.course_code
 
-    # def get_delete_course_url(self):
     #     return reverse("delete_course", kwargs={"course_id": self.pk})
 
 
