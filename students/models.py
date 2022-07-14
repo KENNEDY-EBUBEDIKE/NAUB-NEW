@@ -1,5 +1,6 @@
 from django.db import models
 from django.urls import reverse
+from django.contrib.contenttypes.fields import GenericRelation
 
 
 class Course(models.Model):
@@ -20,10 +21,9 @@ class Course(models.Model):
 
 
 class StudentProfile(models.Model):
-
     # Basic Info
-    first_name = models.CharField(blank=False, max_length=50)
-    surname = models.CharField(blank=False, max_length=50)
+    first_name = models.CharField(blank=False, max_length=50, null=True)
+    surname = models.CharField(blank=False, max_length=50, null=True)
     other_name = models.CharField(blank=True, null=True, max_length=50)
 
     # Contact Info
@@ -52,11 +52,27 @@ class StudentProfile(models.Model):
     courses = models.ManyToManyField('course', related_name='StudentProfile', blank=True)
     reg_date = models.DateTimeField(auto_now_add=True)
 
+    rfid_code = GenericRelation('users.CodeBase', related_query_name='student_profile')
+
     class Meta:
         ordering = ('matric_number',)
 
     def __str__(self):
         return self.matric_number
+
+    def get_rfid_code(self):
+        q = self.rfid_code.all()
+        if q:
+            return q[0].rfid_code
+        else:
+            return None
+
+    def get_last_scan(self):
+        q = self.rfid_code.all()
+        if q:
+            return q[0].last_scan
+        else:
+            return None
 
     # def get_student_profile_url(self):
     #     return reverse("student_full_profile", kwargs={"student_id": self.pk})

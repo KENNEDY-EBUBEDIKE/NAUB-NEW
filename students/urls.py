@@ -1,11 +1,15 @@
 from django.urls import path
 from django.conf import settings
-from .views import students_database, register_student, student_profile
+from .views import students_database, \
+    register_student, student_profile, \
+    edit_student_profile, update_rfid_code
 
 urlpatterns = [
     path('students-database/', students_database, name='students_database'),
     path('student-profile/<int:pk>/', student_profile, name='student_profile'),
     path('register-student/', register_student, name='register_student'),
+    path('update-rfid-code/', update_rfid_code, name='update_rfid_code'),
+    path('edit-student-profile/', edit_student_profile, name='edit_student_profile'),
 ]
 
 

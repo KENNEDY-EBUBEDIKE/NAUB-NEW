@@ -4,6 +4,8 @@ from rest_framework.decorators import api_view, permission_classes
 from .models import StudentProfile
 from .serializers import StudentProfileSerializer
 from rest_framework.permissions import IsAuthenticated
+from rest_framework import status
+from NAUB_RFID import rfid_code_utilities
 
 
 @api_view(['GET'])
@@ -19,11 +21,12 @@ def students_database(request):
 
 
 @api_view(['GET'])
-# @permission_classes((IsAuthenticated, ))
+@permission_classes((IsAuthenticated, ))
 def student_profile(request, pk):
     time.sleep(1)
     student = StudentProfile.objects.get(id=pk)
     ser_student = StudentProfileSerializer(student)
+
     return Response({
         'success': True,
         'student': ser_student.data
@@ -47,3 +50,56 @@ def register_student(request):
                 'success': False,
                 'error': student_serializer.errors
             })
+
+
+@api_view(['GET', 'PUT', 'PATCH', 'DELETE'])
+@permission_classes((IsAuthenticated, ))
+def edit_student_profile(request):
+    if request.method == 'PUT' or request.method == 'PATCH':
+        if request.method == 'PUT':  # Complete Update of all fields
+            student_serializer = StudentProfileSerializer(instance=request.user, data=request.data)
+        elif request.method == 'PATCH':  # Partial Update of desired fields
+            print(request.data)
+            student = StudentProfile.objects.get(id=request.data['pk'])
+            student_serializer = StudentProfileSerializer(instance=student, data=request.data, partial=True)
+        else:
+            student_serializer = StudentProfileSerializer()
+        if student_serializer.is_valid():
+            student_serializer.save()
+            return Response(
+                data={
+                    "success": True,
+                    "student": student_serializer.data,
+                      },
+                status=status.HTTP_200_OK)
+        else:
+            print(student_serializer.errors)
+            return Response(
+                data={"success": False,
+                      "error": student_serializer.errors},
+                status=status.HTTP_200_OK
+            )
+
+
+@api_view(['PATCH'])
+@permission_classes((IsAuthenticated, ))
+def update_rfid_code(request):
+    if request.method == "PATCH":
+        student = StudentProfile.objects.get(id=request.data['pk'])
+        resp = rfid_code_utilities.update_rfid_code(student, request.data['rfid_code'])
+        if resp["success"]:
+            return Response(
+                data={
+                    "success": True,
+                    "message": "Updated Successfully"
+                },
+                status=status.HTTP_200_OK
+            )
+        else:
+            return Response(
+                data={
+                    "success": False,
+                    "message": f'This RFID Card belongs to {resp["owner"].surname} {resp["owner"].first_name}'
+                },
+                status=status.HTTP_200_OK
+            )
