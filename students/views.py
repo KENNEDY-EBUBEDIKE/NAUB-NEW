@@ -27,6 +27,8 @@ def student_profile(request, pk):
     student = StudentProfile.objects.get(id=pk)
     ser_student = StudentProfileSerializer(student)
 
+    print(student.courses.all())
+
     return Response({
         'success': True,
         'student': ser_student.data
@@ -52,14 +54,13 @@ def register_student(request):
             })
 
 
-@api_view(['GET', 'PUT', 'PATCH', 'DELETE'])
+@api_view(['PUT', 'PATCH', 'DELETE'])
 @permission_classes((IsAuthenticated, ))
 def edit_student_profile(request):
     if request.method == 'PUT' or request.method == 'PATCH':
         if request.method == 'PUT':  # Complete Update of all fields
             student_serializer = StudentProfileSerializer(instance=request.user, data=request.data)
         elif request.method == 'PATCH':  # Partial Update of desired fields
-            print(request.data)
             student = StudentProfile.objects.get(id=request.data['pk'])
             student_serializer = StudentProfileSerializer(instance=student, data=request.data, partial=True)
         else:
@@ -69,7 +70,7 @@ def edit_student_profile(request):
             return Response(
                 data={
                     "success": True,
-                    "student": student_serializer.data,
+                    "message": "Updated Successfully"
                       },
                 status=status.HTTP_200_OK)
         else:
@@ -103,3 +104,19 @@ def update_rfid_code(request):
                 },
                 status=status.HTTP_200_OK
             )
+
+
+@api_view(['POST'])
+@permission_classes((IsAuthenticated, ))
+def register_course(request):
+    if request.method == "POST":
+        student = StudentProfile.objects.get(id=request.data['pk'])
+        courses = request.data['courses']
+        print(courses)
+        return Response(
+            data={
+                "success": True,
+                "message": "Registered Successfully"
+            },
+            status=status.HTTP_200_OK
+        )
