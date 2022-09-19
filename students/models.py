@@ -1,28 +1,28 @@
 from django.db import models
 from django.urls import reverse
+from django.contrib.contenttypes.fields import GenericRelation
 
 
-class Course(models.Model):
-    course_code = models.CharField(unique=True, blank=False, null=True, max_length=255)
-    course_title = models.CharField(unique=True, blank=False, null=True, max_length=255)
-    course_faculty = models.CharField(blank=False, null=True, max_length=255)
-    course_department = models.CharField(blank=False, null=True, max_length=255)
-    credit_unit = models.IntegerField(blank=False, null=True)
-
-    class Meta:
-        ordering = ('course_code',)
-
-    def __str__(self):
-        return self.course_code
-
-    #     return reverse("delete_course", kwargs={"course_id": self.pk})
+# class Course(models.Model):
+#     course_code = models.CharField(unique=True, blank=False, null=True, max_length=255)
+#     course_title = models.CharField(unique=True, blank=False, null=True, max_length=255)
+#     course_faculty = models.CharField(blank=False, null=True, max_length=255)
+#     course_department = models.CharField(blank=False, null=True, max_length=255)
+#     credit_unit = models.IntegerField(blank=False, null=True)
+#
+#     class Meta:
+#         ordering = ('course_code',)
+#
+#     def __str__(self):
+#         return self.course_code
+#
+#     #     return reverse("delete_course", kwargs={"course_id": self.pk})
 
 
 class StudentProfile(models.Model):
-
     # Basic Info
-    first_name = models.CharField(blank=False, max_length=50)
-    surname = models.CharField(blank=False, max_length=50)
+    first_name = models.CharField(blank=False, max_length=50, null=True)
+    surname = models.CharField(blank=False, max_length=50, null=True)
     other_name = models.CharField(blank=True, null=True, max_length=50)
 
     # Contact Info
@@ -39,7 +39,7 @@ class StudentProfile(models.Model):
     # Bio Info
     gender = models.CharField(null=True, max_length=10)
     date_of_birth = models.DateField(null=True, blank=True)
-    nationality = models.CharField(null=True, max_length=10)
+    nationality = models.CharField(null=True, max_length=10, default="Nigerian")
     state_of_origin = models.CharField(null=True, blank=True, max_length=20)
     lga = models.CharField(null=True, max_length=50, blank=True)
     resident_address = models.TextField(null=True, blank=True)
@@ -48,14 +48,37 @@ class StudentProfile(models.Model):
     is_flaged = models.CharField(null=True, max_length=200, default=None)
     is_active = models.BooleanField(default=True)
 
-    courses = models.ManyToManyField('course', related_name='StudentProfile', blank=True)
+    courses = models.ManyToManyField('courses.Course', related_name='student_profile', blank=True)
     reg_date = models.DateTimeField(auto_now_add=True)
+
+    rfid_code = GenericRelation('users.CodeBase', related_query_name='student_profile')
 
     class Meta:
         ordering = ('matric_number',)
 
     def __str__(self):
         return self.matric_number
+
+    def get_rfid_code(self):
+        q = self.rfid_code.all()
+        if q:
+            return q[0].rfid_code
+        else:
+            return None
+
+    def get_last_scan(self):
+        q = self.rfid_code.all()
+        if q:
+            return q[0].last_scan
+        else:
+            return None
+
+    def get_total_registered_units(self):
+        reg_courses = self.courses.all()
+        total_unit = 0
+        for course in reg_courses:
+            total_unit += course.credit_unit
+        return total_unit
 
     # def get_student_profile_url(self):
     #     return reverse("student_full_profile", kwargs={"student_id": self.pk})
@@ -79,4 +102,4 @@ class ScanRecords(models.Model):
         ordering = ('scan_time',)
 
     def __str__(self):
-        return self.student.matric_number
+        return f'{self.student.matric_number} -> {self.scan_time}'
