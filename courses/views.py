@@ -50,11 +50,14 @@ def get_course(request, course_id):
             'course': serialized_course.data
         })
     elif request.method == "PATCH":
-        print(request.data)
+        course = Course.objects.get(id=course_id)
+        course_serializer = CourseSerializer(instance=course, data=request.data, partial=True)
+        if course_serializer.is_valid():
+            course_serializer.save()
         return Response({
             'success': True,
             'message': "Course Updated Successfully"
-        })
+        }, status=status.HTTP_200_OK)
 
     elif request.method == "DELETE":
         course = Course.objects.get(id=course_id)
