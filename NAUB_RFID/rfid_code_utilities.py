@@ -29,7 +29,6 @@ def check_owner(rfid_code):
         code_base_obj = code_base_model.objects.get(rfid_code=rfid_code)
         return code_base_obj.owner
     except ObjectDoesNotExist:
-        print("Card Does Not Exist")
         return None
 
 
