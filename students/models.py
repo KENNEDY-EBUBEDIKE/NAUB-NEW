@@ -3,22 +3,6 @@ from django.urls import reverse
 from django.contrib.contenttypes.fields import GenericRelation
 
 
-# class Course(models.Model):
-#     course_code = models.CharField(unique=True, blank=False, null=True, max_length=255)
-#     course_title = models.CharField(unique=True, blank=False, null=True, max_length=255)
-#     course_faculty = models.CharField(blank=False, null=True, max_length=255)
-#     course_department = models.CharField(blank=False, null=True, max_length=255)
-#     credit_unit = models.IntegerField(blank=False, null=True)
-#
-#     class Meta:
-#         ordering = ('course_code',)
-#
-#     def __str__(self):
-#         return self.course_code
-#
-#     #     return reverse("delete_course", kwargs={"course_id": self.pk})
-
-
 class StudentProfile(models.Model):
     # Basic Info
     first_name = models.CharField(blank=False, max_length=50, null=True)

@@ -1,11 +1,5 @@
-from datetime import datetime
-from django.utils import timezone
-from django.shortcuts import render, redirect, HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
 from django.apps import apps
-from rest_framework.response import Response
-from rest_framework.decorators import api_view
-from students.serializers import StudentProfileSerializer
 import re
 
 code_base_model = apps.get_model('users', 'CodeBase')
@@ -22,7 +16,7 @@ def all_scan_filter(rfid_code):
 def check_owner(rfid_code):
     """
     Function to check and return the owner of
-    an RFID Code or return None is there's no owner
+    an RFID Code or return None if there's no owner
     """
     rfid_code = all_scan_filter(rfid_code)
     try:

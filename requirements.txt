@@ -1,0 +1,14 @@
+asgiref==3.5.1
+Django==4.0.4
+django-cors-headers==3.11.0
+django-extensions==3.2.1
+django-filter==21.1
+djangorestframework==3.13.1
+Markdown==3.3.6
+Pillow==9.1.1
+pygraphviz==1.10
+python-decouple==3.6
+python-dotenv==0.20.0
+pytz==2022.4
+sqlparse==0.4.3
+whitenoise==6.0.0

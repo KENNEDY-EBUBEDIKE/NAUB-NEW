@@ -28,12 +28,14 @@ def student_profile(request, pk):
     student = StudentProfile.objects.get(id=pk)
     ser_student = StudentProfileSerializer(student)
 
-    print(student.courses.all())
-
     return Response({
         'success': True,
         'student': ser_student.data
     })
+
+
+def dummy_function_based_view(request):
+    pass
 
 
 @api_view(['POST', ])
