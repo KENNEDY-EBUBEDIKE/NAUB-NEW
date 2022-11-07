@@ -1,2 +1,3 @@
 # NAUB-NEW-SERVER
-Rebuild of the NAUB RFID project Using Angular 13 and Django
+SERVER SIDE of Rebuild of the NAUB RFID project Using Angular 13 and Django
+
